@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}IdeaQuest: is your idea already patented in India?{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="container">
+    <div>
+      <h1>Is your idea already patented in India?</h1>
+      <p class="lead">Describe your invention in a few lines. IdeaQuest finds similar Indian patents, shows which features already exist, and suggests what you could add.</p>
+      <div class="actions">
+        <a class="btn" href="{{ url_for('analyze') }}">Check my idea</a>
+        <a href="{{ url_for('how_it_works') }}">See how it works</a>
+      </div>
+      <p class="small">Searches {{ "{:,}".format(stats.total) }} Indian patents. Your idea is not saved.</p>
+    </div>
+
+    <figure class="figure">
+      <svg viewBox="0 0 520 420" role="img" aria-labelledby="fig1t fig1d">
+        <title id="fig1t">Figure 1</title>
+        <desc id="fig1d">A light bulb that stands for your idea, two patent documents that already exist, and a highlighted feature that no patent covers.</desc>
+
+        <!-- existing patents, bottom left -->
+        <rect class="fig-line fig-paper" x="28" y="240" width="128" height="160"/>
+        <rect class="fig-line fig-paper" x="46" y="226" width="128" height="160"/>
+        <path class="fig-line" stroke-width="3.5" d="M60 248 H122"/>
+        <path class="fig-line fig-thin" d="M60 270 H160 M60 286 H150 M60 302 H160 M60 318 H140 M60 334 H156 M60 350 H118"/>
+
+        <!-- existing patent, top right -->
+        <rect class="fig-line fig-paper" x="360" y="56" width="132" height="150"/>
+        <path class="fig-line" stroke-width="3.5" d="M374 78 H432"/>
+        <path class="fig-line fig-thin" d="M374 100 H480 M374 116 H470 M374 132 H480 M374 148 H456 M374 164 H478 M374 180 H440"/>
+
+        <!-- the idea: a light bulb -->
+        <circle class="fig-line fig-paper" cx="240" cy="165" r="72"/>
+        <path class="fig-line fig-thin" d="M198 132 Q206 114 224 106"/>
+        <rect class="fig-mark" x="204" y="172" width="72" height="26" rx="4"/>
+        <path class="fig-line" d="M222 226 V180 Q231 150 240 180 Q249 150 258 180 V226"/>
+        <path class="fig-line" d="M214 224 V262 M266 224 V262"/>
+        <rect class="fig-line fig-paper" x="212" y="262" width="56" height="34" rx="4"/>
+        <path class="fig-line fig-thin" d="M212 274 H268 M212 286 H268"/>
+        <path class="fig-line" d="M222 296 V304 Q240 318 258 304 V296"/>
+
+        <!-- callouts -->
+        <path class="fig-line draw" pathLength="1" d="M240 52 V92"/>
+        <circle class="fig-dot" cx="240" cy="38" r="14"/><text class="fig-num" x="240" y="43">10</text>
+        <text class="fig-text" x="262" y="43">your idea</text>
+
+        <path class="fig-line draw d2" pathLength="1" d="M80 176 L96 226"/>
+        <circle class="fig-dot" cx="76" cy="162" r="14"/><text class="fig-num" x="76" y="167">12</text>
+        <text class="fig-text" x="76" y="134" text-anchor="middle">existing patents</text>
+
+        <path class="fig-line draw d3" pathLength="1" d="M452 238 V206"/>
+        <circle class="fig-dot" cx="452" cy="252" r="14"/><text class="fig-num" x="452" y="257">12</text>
+
+        <path class="fig-line draw d4" pathLength="1" d="M384 296 L278 194"/>
+        <circle class="fig-dot" cx="392" cy="304" r="14"/><text class="fig-num" x="392" y="309">14</text>
+        <text class="fig-text" x="340" y="342">found in no</text>
+        <text class="fig-text" x="340" y="360">similar patent</text>
+      </svg>
+      <figcaption>Fig. 1. Your idea (10), the patents that already exist (12) and the feature nobody covers (14).</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div>
+      <h2>What you get</h2>
+      <p>Five things, in one check. You write the idea in plain English. IdeaQuest does the searching and comparing.</p>
+    </div>
+    <ol class="claims">
+      <li><span class="n">1</span><div><h3>Describe your invention</h3><p>Write what it is and what it does. No patent language needed.</p></div></li>
+      <li><span class="n">2</span><div><h3>See similar patents</h3><p>The closest Indian patents, ranked by how much they overlap with your idea.</p></div></li>
+      <li><span class="n">3</span><div><h3>Compare feature by feature</h3><p>Each feature of your idea is marked as existing, partly covered or not found.</p></div></li>
+      <li><span class="n">4</span><div><h3>Spot the gaps</h3><p>Features that similar patents share and your idea does not mention yet.</p></div></li>
+      <li><span class="n">5</span><div><h3>Get suggestions</h3><p>Rule-based advice on what to add, with the reason shown for each one.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="section band">
+  <div class="container">
+    <h2>How a check works</h2>
+    <p>Four steps, each one a formula or a rule you can explain.</p>
+    <ol class="pipeline">
+      <li><h3>1. Clean the text</h3><p>Filler words are removed and synonyms such as car and automobile are grouped.</p></li>
+      <li><h3>2. Find similar patents</h3><p>Text becomes TF-IDF numbers. Patents are ranked by cosine similarity.</p></li>
+      <li><h3>3. Compare features</h3><p>Fuzzy logic gives every feature a score from 0 to 1.</p></li>
+      <li><h3>4. Suggest improvements</h3><p>IF-THEN rules turn the gaps into suggestions and explain each one.</p></li>
+    </ol>
+    <p style="margin-top: 28px"><a href="{{ url_for('how_it_works') }}">Read the full explanation</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div>
+      <h2>How to read your results</h2>
+      <p>Every feature of your idea gets one of three labels, with a match score between 0 and 1.</p>
+    </div>
+    <div class="labels">
+      <div class="label-row">
+        <div><span class="chip existing">solar<small>0.91</small></span></div>
+        <p><b>Already exists.</b> Most similar patents have it. Do not present it as new.</p>
+      </div>
+      <div class="label-row">
+        <div><span class="chip partial">sensor<small>0.42</small></span></div>
+        <p><b>Partly covered.</b> Some patents have it. Add more detail to stand out.</p>
+      </div>
+      <div class="label-row">
+        <div><span class="chip unexplored">water quality<small>0.00</small></span></div>
+        <p><b>Not found.</b> No similar patent mentions it. This could be what makes your idea different.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section band cta-band">
+  <div class="container">
+    <h2>Try it with your own idea.</h2>
+    <a class="btn" href="{{ url_for('analyze') }}">Check my idea</a>
+  </div>
+</section>
+
+{% endblock %}

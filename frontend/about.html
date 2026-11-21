@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}About | IdeaQuest{% endblock %}
+
+{% block content %}
+<div class="narrow">
+  <div class="page-head">
+    <h1>About IdeaQuest</h1>
+    <p>IdeaQuest helps people who have an idea for an invention check what already exists, and shows where the idea could be improved.</p>
+  </div>
+
+  <div class="text-section">
+    <h2>The patent data</h2>
+    <p>IdeaQuest searches {{ "{:,}".format(stats.total) }} Indian granted patents from Lens.org{% if stats.first_year %}, published between {{ stats.first_year }} and {{ stats.last_year }}{% endif %}.</p>
+    <p>{{ "{:,}".format(stats.with_abstract) }} of them include an abstract. The rest have only a title, so matches for those are rougher. The patents cover areas such as vehicles, batteries, textiles, water, solar energy, agriculture, food processing, sensors and medical devices.</p>
+  </div>
+
+  <div class="text-section">
+    <h2>What to keep in mind</h2>
+    <ul class="plain-list">
+      <li>IdeaQuest only searches the patents in its data. It is not a live patent database.</li>
+      <li>It matches words and their synonyms. It does not understand meaning the way a person does.</li>
+      <li>It gives guidance only. It cannot tell you whether an idea can be patented.</li>
+      <li>Your idea is not saved anywhere.</li>
+      <li>Please check with a patent professional before you file.</li>
+    </ul>
+  </div>
+
+  <div class="text-section" style="padding-bottom: 72px">
+    <h2>Built with</h2>
+    <p>Python and Flask for the server, and plain HTML and CSS for the pages. Similar patents are found with TF-IDF and cosine similarity, and suggestions come from written rules.</p>
+    <p><a href="{{ url_for('how_it_works') }}">See how each step works</a></p>
+  </div>
+</div>
+{% endblock %}
