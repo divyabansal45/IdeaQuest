@@ -48,17 +48,6 @@ The check page has a switch. "Physical invention" searches Indian patents. "Webs
 Idea -> preprocess.py -> search.py (top 5 patents) -> compare.py (feature labels)
 -> rules.py (gaps and suggestions) -> results.html
 
-## Syllabus mapping
-
-| Part of project | File | Syllabus topic |
-|---|---|---|
-| Bag of Words, TF-IDF | search.py | Unit II: Text Feature Extraction |
-| Similar patent ranking | search.py | Unit IV: Information Retrieval |
-| Related concepts | concept_graph.py | Unit I: Search, BFS, DFS |
-| Synonym groups | ontology.py | Unit II: Ontology, WordNet |
-| Existing / Partial / Unexplored | compare.py | Unit III: Fuzzy Logic |
-| Gaps and suggestions | rules.py | Unit II: Rule Based Systems, Unit IV: Expert System Architecture |
-| Disclaimer on the pages | index.html, results.html | Unit IV: Ethics in AI |
 
 ## Why this is NOT machine learning
 
@@ -76,9 +65,3 @@ Idea -> preprocess.py -> search.py (top 5 patents) -> compare.py (feature labels
 
 Patents that have an abstract give much better results than title-only patents.
 
-## Limitations (say these in the viva)
-
-- The system only searches the patents in the dataset. It is not a live patent database.
-- Many older patents have only a title, so their feature comparison is rough.
-- Words are matched by stem and by the small ontology, so it does not understand meaning like a human.
-- It gives guidance only. It cannot say whether an idea is patentable.
