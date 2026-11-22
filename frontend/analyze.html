@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Check an idea · IdeaQuest{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="check">
+
+    <form action="{{ url_for('analyze') }}" method="post">
+      <h1 style="font-size: clamp(2rem, 4.5vw, 3rem)">Describe your idea</h1>
+      <p>Say what it is, what it does and who it is for. Use at least four words.</p>
+
+      <fieldset class="modes">
+        <legend>What is your idea?</legend>
+        <label class="mode"><input type="radio" name="mode" value="hardware" {{ "checked" if mode != "software" }}> <span><b>A physical invention</b><small>Checked against Indian granted patents</small></span></label>
+        <label class="mode"><input type="radio" name="mode" value="software" {{ "checked" if mode == "software" }}> <span><b>A website or app</b><small>Checked against Indian apps, websites and startups</small></span></label>
+      </fieldset>
+
+      {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+
+      <label for="idea">Your idea</label>
+      <textarea id="idea" name="idea" maxlength="1000"
+        data-ph-hardware="A water purification system that uses a filter and a sensor to show water quality"
+        data-ph-software="A website that plays the pronunciation of words in different languages and shows their meanings"
+        placeholder="A water purification system that uses a filter and a sensor to show water quality">{{ idea }}</textarea>
+      <div class="counter" id="count" aria-live="polite">0 / 1000</div>
+      <button class="btn" type="submit">Check my idea</button>
+    </form>
+
+    <aside class="examples">
+      <h2>Try an example</h2>
+      <p>Click one to fill the box.</p>
+      <div data-for="hardware">
+        <button type="button" class="example" data-example="A solar powered water purification system with a filter and a sensor that shows water quality">Solar water purifier with a quality sensor</button>
+        <button type="button" class="example" data-example="An electric vehicle with a swappable battery and a sensor that shows the charge level">Electric vehicle with a swappable battery</button>
+        <button type="button" class="example" data-example="A textile fabric that changes colour with temperature">Fabric that changes colour with heat</button>
+        <button type="button" class="example" data-example="A food processing machine that dries fruit using solar heat and a conveyor belt">Solar fruit dryer with a conveyor belt</button>
+        <button type="button" class="example" data-example="An agriculture sprayer that uses a sensor to detect crop disease and sprays only where needed">Sprayer that detects crop disease</button>
+      </div>
+      <div data-for="software">
+        <button type="button" class="example" data-example="A website that plays the pronunciation of words in different languages and shows their meanings">Voice pronunciation and meanings in many languages</button>
+        <button type="button" class="example" data-example="An app that lets farmers sell crops directly to buyers and shows daily market prices">App for farmers to sell crops directly</button>
+        <button type="button" class="example" data-example="An app to book doctor appointments and get online consultation and medicine delivery">Doctor booking and online consultation</button>
+        <button type="button" class="example" data-example="A website to find and book home tutors for school students with live video classes">Home tutor booking with live classes</button>
+        <button type="button" class="example" data-example="A chatbot that answers government scheme questions in Hindi and other Indian languages">Government scheme chatbot in Indian languages</button>
+      </div>
+
+      <div class="tips">
+        <h2>Tips for better results</h2>
+        <ul class="plain-list">
+          <li data-for="hardware">Name the main parts, such as sensor, filter or battery.</li>
+          <li data-for="hardware">Our patents cover areas like vehicles, batteries, textiles, water, solar, agriculture, food and sensors.</li>
+          <li data-for="software">Say what the site or app does and who uses it.</li>
+          <li data-for="software">Our list covers about {{ stats.software_total }} well-known Indian apps and websites in areas like education, language, payments, health, travel, jobs and shopping. It is not complete.</li>
+          <li>Say what the idea is used for.</li>
+        </ul>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var box = document.getElementById("idea");
+    var count = document.getElementById("count");
+    function update() { count.textContent = box.value.length + " / 1000"; }
+    function currentMode() { return document.querySelector('input[name="mode"]:checked').value; }
+    function showMode() {
+      var m = currentMode();
+      document.querySelectorAll("[data-for]").forEach(function (el) { el.hidden = el.getAttribute("data-for") !== m; });
+      box.placeholder = box.getAttribute("data-ph-" + m);
+    }
+    box.addEventListener("input", update);
+    document.querySelectorAll('input[name="mode"]').forEach(function (r) { r.addEventListener("change", showMode); });
+    document.querySelectorAll("[data-example]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        box.value = b.getAttribute("data-example");
+        update();
+        box.focus();
+      });
+    });
+    update();
+    showMode();
+  })();
+</script>
+{% endblock %}

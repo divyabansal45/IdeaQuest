@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Results for your idea | IdeaQuest{% endblock %}
+
+{% block content %}
+{% set existing = comparison.features|selectattr("label", "equalto", "Existing")|list %}
+{% set partial = comparison.features|selectattr("label", "equalto", "Partial")|list %}
+{% set unexplored = comparison.features|selectattr("label", "equalto", "Unexplored")|list %}
+{% set things = "patents" if mode != "software" else "products" %}
+{% set kind_label = {"warning": "Heads up.", "gap": "Add this.", "novelty": "Could be new."} %}
+
+<div class="container">
+
+  <section class="report-head">
+    <h1 style="font-size: clamp(1.8rem, 4vw, 2.6rem)">Results for your idea</h1>
+    <p class="idea-quote">{{ idea }}</p>
+    {% if patents %}
+    <p class="summary">
+      We found {{ patents|length }} similar {{ "patent" if mode != "software" else "product" }}{{ "s" if patents|length != 1 }}.
+      Feature check: {{ existing|length }} existing,
+      {{ partial|length }} partly covered,
+      {{ unexplored|length }} not found.
+    </p>
+    {% endif %}
+    {% if comparison.titles_only and patents and mode != "software" %}
+    <p class="notice">{{ comparison.titles_only }} of these {{ patents|length }} patents have only a title in our data, because older patents often have no abstract. The feature comparison is approximate.</p>
+    {% endif %}
+  </section>
+
+  <section class="result-section">
+    <h2>{{ "Similar patents" if mode != "software" else "Similar apps and websites" }}</h2>
+    <p class="sub">Ranked by how much they overlap with your idea. 1.00 would be identical.</p>
+
+    {% for p in patents %}
+    <article class="patent">
+      <div class="rank">{{ loop.index }}</div>
+      <div>
+        <h3>{{ p.title }}</h3>
+        <div class="meta">
+          <span>{{ p.label }}</span>
+          {% if p.year %}<span>{{ "Published" if mode != "software" else "Founded" }} {{ p.year }}</span>{% endif %}
+          {% if p.applicant %}<span>{{ p.applicant }}</span>{% endif %}
+          {% if p.status %}<span>{{ p.status }}</span>{% endif %}
+        </div>
+        {% if p.offers %}<p class="coverage"><b>Offers:</b> {% for w in p.offers %}<span class="chip existing">{{ w }}</span>{% endfor %}</p>{% endif %}
+        {% if p.lacks %}<p class="coverage"><b>Gap you can fill:</b> {% for w in p.lacks %}<span class="chip unexplored">{{ w }}</span>{% endfor %}</p>
+        {% elif comparison.concept_mode %}<p class="coverage"><b>Gap you can fill:</b> <span class="none">It already offers every feature of your idea.</span></p>{% endif %}
+        <details>
+          <summary>{{ "Abstract" if mode != "software" else "What it does" }}</summary>
+          <p>{% if p.abstract %}{{ p.abstract }}{% else %}No abstract is available for this patent.{% endif %}
+            {% if p.url %}<br><a href="{{ p.url }}" target="_blank" rel="noopener">View on Lens.org</a>{% endif %}
+            {% if mode == "software" %}<br><a href="https://www.google.com/search?q={{ p.title|urlencode }}+India" target="_blank" rel="noopener">Search the web for {{ p.title }}</a>{% endif %}</p>
+        </details>
+      </div>
+      <div class="sim">
+        <b>{{ "%.2f"|format(p.score) }}</b>
+        <small>similarity</small>
+        <div class="bar"><i style="width: {{ [p.score * 100, 100]|min }}%"></i></div>
+      </div>
+    </article>
+    {% else %}
+    <p>{% if mode == "software" %}No similar apps or websites were found. Describe what the site or app does and who uses it, and check again.{% else %}No similar patents were found. Describe the parts and purpose of your invention, for example the materials, sensors or processes it uses, and check again.{% endif %}</p>
+    {% endfor %}
+  </section>
+
+  <section class="result-section">
+    <h2>Feature comparison</h2>
+    <p class="sub">Each feature of your idea is checked against the {{ patents|length }} similar {{ things }}. The score from 0 to 1 is worked out with fuzzy logic.</p>
+    <div class="cols3">
+      <div>
+        <h3>Already exists</h3>
+        {% for f in existing %}<span class="chip existing">{{ f.name }}<small>{{ "%.2f"|format(f.score) }}</small></span>{% else %}<span class="none">None</span>{% endfor %}
+      </div>
+      <div>
+        <h3>Partly covered</h3>
+        {% for f in partial %}<span class="chip partial">{{ f.name }}<small>{{ "%.2f"|format(f.score) }}</small></span>{% else %}<span class="none">None</span>{% endfor %}
+      </div>
+      <div>
+        <h3>Not found</h3>
+        {% for f in unexplored %}<span class="chip unexplored">{{ f.name }}<small>{{ "%.2f"|format(f.score) }}</small></span>{% else %}<span class="none">None</span>{% endfor %}
+      </div>
+    </div>
+    {% if comparison.concept_mode %}
+    <details class="more"><summary>Show the word-level match</summary>
+      <p class="sub">The same check on single words, before they are grouped into features.</p>
+      <div>{% for f in comparison.word_features %}<span class="chip {{ {'Existing':'existing','Partial':'partial','Unexplored':'unexplored'}[f.label] }}">{{ f.name }}<small>{{ "%.2f"|format(f.score) }}</small></span>{% endfor %}</div>
+    </details>
+    {% endif %}
+  </section>
+
+  {% macro advice(c) %}
+    <li class="{{ c.kind }}">{{ c.text }}
+      <details><summary>Why? ({{ c.rule }})</summary><p class="why">{{ c.why }}</p></details>
+    </li>
+  {% endmacro %}
+
+  {% if groups.warning %}
+  <section class="result-section">
+    <h2>Heads up</h2>
+    <ul class="advice">{% for c in groups.warning %}{{ advice(c) }}{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  <section class="result-section">
+    <h2>Where your idea can stand out</h2>
+    <p class="sub">These parts of your idea are missing or rare in the similar {{ things }}. They are the gaps you can fill.</p>
+    <ul class="advice">
+      {% for c in groups.stand_out %}{{ advice(c) }}{% else %}
+      <li class="note">Every part of your idea is already covered by similar {{ things }}. Look at the suggestions below to add something different.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="result-section">
+    <h2>Worth adding to your idea</h2>
+    <p class="sub">Several similar {{ things }} offer these, but your idea does not include them yet.</p>
+    <ul class="advice">
+      {% for c in groups.add[:5] %}{{ advice(c) }}{% else %}
+      <li class="note">No extra shared features were found.</li>
+      {% endfor %}
+    </ul>
+    {% if groups.add|length > 5 %}
+    <details class="more"><summary>Show {{ groups.add|length - 5 }} more</summary>
+      <ul class="advice">{% for c in groups.add[5:] %}{{ advice(c) }}{% endfor %}</ul>
+    </details>
+    {% endif %}
+  </section>
+
+  {% if groups.common %}
+  <section class="result-section">
+    <h2>Already common</h2>
+    <p class="sub">Do not present these as new. They exist in most similar {{ things }}.</p>
+    <details class="more"><summary>Show {{ groups.common|length }} features</summary>
+      <ul class="advice">{% for c in groups.common %}{{ advice(c) }}{% endfor %}</ul>
+    </details>
+  </section>
+  {% endif %}
+
+  <p class="notice">{% if mode == "software" %}Features are taken from the short description of each product in our list. A product may offer more than we list, so check the real app or website before you decide.{% else %}Features are taken from the title and abstract of each patent in our data. A patent may cover more, so read the full patent before you decide.{% endif %}</p>
+
+  <section class="result-section">
+    <h2>Related concepts</h2>
+    <p class="sub">Ideas and technologies that are often used together with your idea. You may want to cover them.</p>
+    {% for r in related %}
+    <div class="related">
+      <h3>From <span class="chip existing">{{ r.start }}</span></h3>
+      <p><b>Closely related:</b> {% for c in r.level1[:6] %}<span class="chip">{{ c }}</span>{% else %}<span class="none">None</span>{% endfor %}</p>
+      <p><b>Also related:</b> {% for c in r.level2[:6] %}<span class="chip partial">{{ c }}</span>{% else %}<span class="none">None</span>{% endfor %}</p>
+      <p><b>Connected ideas:</b> <span class="chain">{{ r.chain|join(" > ") }}</span></p>
+    </div>
+    {% else %}
+    <p class="none">No related concepts were found for the words in this idea.</p>
+    {% endfor %}
+    {% if related %}<p class="sub">Idea: a concept you have not covered yet, such as one listed here, may be a way to make your idea different.</p>{% endif %}
+  </section>
+
+  <div class="actions-row">
+    <button type="button" class="btn" onclick="window.print()">Print or save as PDF</button>
+  </div>
+  {% if mode == "software" %}<p class="notice">This list covers about {{ stats.software_total }} well-known Indian apps and websites. It is not complete, so no match here does not prove that nobody has built your idea. Search the web before you start.</p>{% endif %}
+  <a class="back" href="{{ url_for('analyze') }}">Check another idea</a>
+</div>
+{% endblock %}

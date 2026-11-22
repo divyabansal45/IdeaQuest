@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}How it works | IdeaQuest{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <h1>How IdeaQuest works</h1>
+    <p>Seven simple steps take your idea from a few lines of text to a list of similar patents and suggestions.</p>
+  </div>
+
+  <div class="step-row">
+    <div><h3>1. Clean the text</h3></div>
+    <div>
+      <p>Your idea becomes lowercase words. Filler words such as <i>the</i>, <i>and</i> and <i>with</i> are removed, and so are generic patent words such as <i>method</i> and <i>apparatus</i>.</p>
+      <p>Word endings are cut, so <i>charging</i>, <i>charges</i> and <i>charged</i> become one word.</p>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div><h3>2. Group synonyms</h3></div>
+    <div>
+      <p>A small word list groups words that mean the same thing. <i>Car</i>, <i>automobile</i> and <i>motorcar</i> all become <i>vehicle</i>, so they count as one idea. Without this, they would be treated as unrelated words.</p>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div><h3>3. Find related concepts</h3></div>
+    <div>
+      <p>Some concepts are different but often used together, such as <i>solar</i> and <i>battery</i>. IdeaQuest keeps a map of such links and follows it from the concepts in your idea. It lists the closest ones first, then ones further away, and shows one long chain of connected ideas.</p>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div><h3>4. Turn words into numbers</h3></div>
+    <div>
+      <p>The words are counted, and each word gets a weight. Rare, specific words get a high weight. Common words get a low weight. This is called TF-IDF.</p>
+      <span class="formula">TF = times the word appears ÷ total words</span>
+      <span class="formula">IDF = log( total patents ÷ patents containing the word )</span>
+      <span class="formula">TF-IDF = TF × IDF</span>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div><h3>5. Find similar patents</h3></div>
+    <div>
+      <p>Your idea and every patent become lists of weights. Cosine similarity measures how close two lists are, from 0 (nothing in common) to 1 (identical). The five highest scores are shown.</p>
+      <span class="formula">cosine = (A · B) ÷ ( |A| × |B| )</span>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div><h3>6. Compare features</h3></div>
+    <div>
+      <p>First, words are grouped into features that people understand. For example <i>home</i> and <i>tutor</i> together become the feature <i>Home tutoring</i>. A built-in list of features does this grouping. Then each feature of your idea gets a match score from 0 to 1. It is the share of the similar patents, weighted by their similarity, that contain the feature.</p>
+      <p>The label comes from fuzzy logic. A score can belong a little to two labels at once, and the label with the higher degree wins.</p>
+      <table>
+        <tr><th>Label</th><th>Score range</th></tr>
+        <tr><td>Not found</td><td>Full up to a score of 0.1, then falls to 0 at 0.3</td></tr>
+        <tr><td>Partly covered</td><td>Rises from 0.1, peaks at 0.4, falls to 0 at 0.7</td></tr>
+        <tr><td>Already exists</td><td>Rises from 0.4 and is full from 0.7</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="step-row">
+    <div><h3>7. Suggest improvements</h3></div>
+    <div>
+      <p>A set of IF-THEN rules looks at the labels, the similarity scores and the words that similar patents share. Every rule that applies becomes a suggestion, and the "Why?" under it names the rule.</p>
+      <p>Example: IF a word appears in at least 2 similar patents AND is missing from your idea, THEN suggest adding it.</p>
+    </div>
+  </div>
+
+  <div class="text-section" style="padding-bottom: 72px">
+    <h2>Know the limits</h2>
+    <ul class="plain-list">
+      <li>Your idea is not saved. Results are guidance, not legal advice.</li>
+      <li>The patent data and the rules are made by people, so they can miss things.</li>
+      <li>Older patents that have only a title give rough results.</li>
+      <li>Every step uses fixed formulas and written rules, so the same idea always gives the same result.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
