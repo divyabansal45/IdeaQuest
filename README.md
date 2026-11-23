@@ -76,9 +76,10 @@ Idea -> preprocess.py -> search.py (top 5 patents) -> compare.py (feature labels
 
 Patents that have an abstract give much better results than title-only patents.
 
-## Limitations (say these in the viva)
+## Limitations
 
 - The system only searches the patents in the dataset. It is not a live patent database.
 - Many older patents have only a title, so their feature comparison is rough.
 - Words are matched by stem and by the small ontology, so it does not understand meaning like a human.
 - It gives guidance only. It cannot say whether an idea is patentable.
+
